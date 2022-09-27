@@ -1,0 +1,17 @@
+db:
+  postgres_url: "postgresql+psycopg2://postgres:postgres@localhost:5432/LDES"
+cache:
+  max_entries: 10
+  directory: "__cache__"
+flask:
+  debug: "true"
+  send_file_max_age_default: 3600
+ldes:
+  base_uri: "http://localhost:5000"
+  py_ldes_uri: "https://pyldes.org/"
+metadata:
+  server_name: "imec EDiT - Linked Data Event Streaming experimental server"
+  server_id: "http://pyldes.org/server"
+  major_version: 1
+  author: "Philippe Michiels"  
+  

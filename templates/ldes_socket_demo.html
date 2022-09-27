@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.1.slim.min.js" integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src="../static/script/rdflib.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    
+    var RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+    var TREE = $rdf.Namespace("https://w3id.org/tree#")
+    var LDES = $rdf.Namespace("https://w3id.org/ldes#")
+
+    var socket = io('http://localhost:5000');
+
+    socket.on('connect', function() {
+        //socket.emit('my event', {data: 'I\'m connected!'});
+        console.log("Connected to socket.")
+
+        socket.on("tree:collection", function(data){
+            var store = $rdf.graph()
+            $rdf.parse(data, store, "https://pyldes.org/");
+            let quads = store.match(null, RDF('type'), LDES('EventStream'), null);
+
+            if (quads.length ==1){
+                var eventStream = quads[0].subject.value
+                renderEvent("<b>collection</b>: " + encodeURI(eventStream), data);
+            }
+        })
+
+        socket.on("tree:view", function(data){
+            var store = $rdf.graph()
+            $rdf.parse(data, store, "https://pyldes.org/");
+            let quads = store.match(null, RDF('type'), TREE('ViewDescription'), null);
+            if (quads.length ==1){
+                var viewDescription = quads[0].subject.value
+                renderEvent("<b>view</b>: " + viewDescription, data);
+            }
+        })
+
+        socket.on("tree:member", function(data){
+            var store = $rdf.graph()
+            $rdf.parse(data, store, "https://pyldes.org/");
+            let quads = store.match(null, RDF('type'), null, null);
+            if (quads.length ==1){
+                var viewDescription = quads[0].subject.value
+                renderEvent("<b>member</b>: " + viewDescription, data);
+            }
+        })
+
+        function renderEvent(eventname, data) {
+            var escaped_data = data.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            var num = escaped_data.trim().split(/\n/).length;
+            line_nums='';
+            for (var j = 0; j < num; j++) {
+                line_nums += (j + 1) + '\n';
+            }
+
+            var event = '';
+            event += '<div class="event">';
+            event += '<div class="eventname">' + eventname + '</div>';
+            event += '<pre class="line-number">' + line_nums + '</pre>';
+            event += '<pre><code>' + escaped_data.trim() + '</code></pre>';
+            event += '</div>';
+
+            $('#messages').prepend(event);
+        }
+
+    });
+</script>
+<style>
+    .eventname, .member_title { background-color: #3f97bd; color: #f0f0f0; padding: 2px 10px; font-weight: 500;}
+    button { background-color: #3f97bd; color: #f0f0f0; font-size: 14pt; }
+    button a, button a:hover { color: #f0f0f0; text-decoration: none;}
+    pre { background-color:#eee; overflow:auto; margin:0 0 1em; padding:.5em 1em; }
+    pre code,
+    pre.line-number { font:normal normal 12px/14px "Courier New",Courier,Monospace; color:black; display:block; }
+    
+    pre.line-number { float:left; margin: 0; border-right:1px solid; text-align:right; }
+    pre.line-number span { display:block; padding:0 .5em 0 1em; }
+    .event { background-color: #eee; }
+</style>
+
+    <h1 class="blue-line">Linked Data Event Socket</h1>
+    <div>(this page requires an active internet connection)</div>
+
+    <div id="messages">
+    </div>
+    
+
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .ldes_collection_wrapper { padding: 10px }
+    .ldes_collection {  box-shadow: 0 0.9375rem 1.5625rem 0 rgb(0 0 0 / 5%);   }
+    .ldes_collection_header { background-color: #3f97bd; color: #f0f0f0; min-height: 35px; border: 1px solid #3f97bd;
+        font-size: 20px; font-weight: 500; line-height: 33px;  }
+
+</style>
+
+    <h1 class="blue-line">Server Index</h1>
+
+    <div class="row">
+        {% for collection in model %}
+        <div class="col-sm-12 col-md-12 col-lg-6 ldes_collection_wrapper">
+            <div class="ldes_collection">
+                <table cellspacing="0" cellpadding="0">
+                    <tr style="height: 0px;">
+                        <th style="height:0px; width: 75px; padding: 0px;"></th>
+                        <th style="height:0px; width: 75px; padding: 0px;"></th>
+                        <td style="height:0px; padding: 0px;"></td></tr>
+                    <tr><td colspan="3" class="ldes_collection_header">{{ collection['https://pyldes.org/spec/alias'] }}</td></tr>
+                    <tr><th>@id</th><td colspan="2">{{ collection['@id'] }}</td></tr>
+                    <tr><th>@type</th><td colspan="2">{{ collection['@type'] }}</td></tr>
+                    <tr><th>title</th><td colspan="2">{{ collection['http://purl.org/dc/terms/title'] }}</td></tr>
+                    
+                    {% for view in collection['https://w3id.org/tree#view'] %}
+                    <tr><th rowspan="2">view</th>
+                        <th>@id</th>
+                        <td><a href="/ldes/{{ collection['https://pyldes.org/spec/alias'] }}/{{view['https://pyldes.org/spec/alias']}}">{{ view['@id'] }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>kind</th>
+                        <td>{{ view['https://pyldes.org/spec/fragmentationKind']['@id'] }}</td>
+                    </tr>
+                    {% endfor %}
+
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+<html>
+<head>
+    <title>Python LDES Server | {{ title }} </title>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="https://use.typekit.net/ogq8uta.css" optimized-fonts="true">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+    <style>
+        body { background-color: #f0f0f0; color: #3c3c3b; font-family: Agenda, "Arial, Helvetica", sans-serif; }
+        table { width: 100%; border:0px; table-layout: fixed;}
+        table tr { border: 0px; }
+        table tr th, 
+        table tr td { border: 1px solid #3f97bd; padding: 5px 15px; overflow: hidden; text-overflow: ellipsis; }
+        header { height: 5em; width: 80%; max-width: 1280px; margin-left: auto; margin-right: auto; display: flex; align-items: center; justify-content: space-between; }
+        .header_logo { display: block; height: 1.25em; max-width: 4.6875em;}
+        .header_container { height: 7em; width: 80%; max-width: 1280px; margin-left: auto; margin-right: auto; background-image: url(/static/img/background.jpg); background-position: center; background-size: cover; box-shadow: inset 0 0 100px black;  }
+        section { width: 80%; max-width: 1280px; margin-left: auto; margin-right: auto; padding: 10px 30px 30px 30px; background-color: white;}
+        h1 { font-size: 18pt; line-height: 1.5; font-weight:500; }
+        .page_title { font-size: 24pt; font-weight:500; color: #f0f0f0; line-height: 3.5em; }
+        .blue-line::before { content: ""; width: 1.5625rem; height: .3125rem; display: block; background-color: #3f97bd; margin-bottom: .875rem; }
+    </style>
+</head>
+
+<body>
+    <header>
+    <img class="header_logo" src="/static/img/imec-logo.svg" alt="imec logo">
+    </header>
+    <section class="header_container">
+        <div class="page_title">{{ title }}</div>        
+    </section>
+    <section>
+
+    {% block content %}
+    
+    {% endblock %}
+    
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>  </body>
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+</body>
+</html>

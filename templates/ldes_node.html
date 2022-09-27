@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .member_title { background-color: #3f97bd; color: #f0f0f0; padding: 2px 10px; font-weight: 500;}
+    button { background-color: #3f97bd; color: #f0f0f0; font-size: 14pt; }
+    button a, button a:hover { color: #f0f0f0; text-decoration: none;}
+</style>
+
+    <h1 class="blue-line">Node</h1>
+    <div class="ldes_node">
+        <table cellspacing="0" cellpadding="0">
+            <tr style="height: 0px;">
+                <th style="height:0px; width: 75px; padding: 0px; border-top: 0px;"></th>
+                <th style="height:0px; width: 75px; padding: 0px; border-top: 0px;"></th>
+                <td style="height:0px; padding: 0px; border-top: 0px;"></td></tr>
+            <tr>
+                <th>@id</th><td colspan="2">{{ model['@id'] }}</td>
+            </tr><tr>
+                <th rowspan="2">view</th><th>kind</th><td>{{ model['https://w3id.org/tree#viewDescription']['https://pyldes.org/spec/fragmentationKind']['@id'] }}</td>
+            </tr><tr>
+                <th>dataset</th><td>{{ model['https://w3id.org/tree#viewDescription']['http://www.w3.org/ns/dcat#servesDataset']['@id'] }}</td>
+            </tr>
+        </table>
+    </div>
+    <br>
+
+    <h1 class="blue-line">Relations</h1>
+    {% for relation in model['https://w3id.org/tree#relation'] %}
+    <button><a href="{{ relation['https://w3id.org/tree#node']['@id']}}">{{ relation['@type'] }}</a></button>
+    &nbsp;
+    {% endfor %}
+    <button><a href="/">Back to index</a></button>
+    <br/>
+    <br/>
+    <br/>
+
+    <h1 class="blue-line">Members</h1>
+    {% for member in model['https://w3id.org/tree#viewDescription']['http://www.w3.org/ns/dcat#servesDataset']['https://w3id.org/tree#member'] %}
+    <div class="member_title">{{ member['@id'] }}</div>
+    <pre class="prettyprint lang-js">{{ json.dumps(member, indent=4).strip() }}</pre>
+    <br/>
+    {% endfor %}
+
+{% endblock %}
