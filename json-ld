@@ -1,6 +1,0 @@
-@prefix ldes: <https://w3id.org/ldes#> .
-
-<http://example.org/MySampleEventStream1> a ldes:EventStream .
-
-<http://example.org/MySampleEventStream2> a ldes:EventStream .
-
