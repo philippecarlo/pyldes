@@ -1,7 +1,7 @@
 db:
   postgres_url: "postgresql+psycopg2://postgres:postgres@localhost:5432/LDES"
 cache:
-  max_entries: 10
+  max_entries: 10000
   directory: "__cache__"
 flask:
   debug: "true"
@@ -13,5 +13,5 @@ metadata:
   server_name: "imec EDiT - Linked Data Event Streaming experimental server"
   server_id: "http://pyldes.org/server"
   major_version: 1
-  author: "Philippe Michiels"  
+  authors: ["Philippe Michiels"]
   

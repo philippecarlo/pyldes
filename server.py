@@ -10,6 +10,7 @@ from werkzeug.serving import WSGIRequestHandler
 from rdflib import Graph, RDF
 from rdflib.namespace import DCAT
 from dependency_injector.wiring import inject, Provide
+from dependency_injector.providers import Configuration
 
 # LDES server modules
 from services.ldes_service import LdesService
@@ -100,7 +101,7 @@ def get_ldes(
 
 @app.route('/ldes', methods = ['POST'])
 @inject
-def post(ldes_service: LdesService = Provide[Container.ldes_service]):
+def post(ldes_service: LdesService = Provide[Container.ldes_service], config: Configuration = Provide[Container.config]):
     content_type, accept_type = get_content_type(request)
     serialization_format = content_type_to_serialization_format(accept_type)
     graph = None

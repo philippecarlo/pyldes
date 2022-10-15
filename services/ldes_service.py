@@ -1,6 +1,6 @@
 import json
 from platform import node
-from xml.etree.ElementTree import VERSION
+from typing import List
 
 from models import TreeCollection, TreeView, TreeMember
 
@@ -8,11 +8,12 @@ from pyld import jsonld
 from rdflib import Graph, Literal, RDF, URIRef
 from rdflib.namespace import DCAT, DCTERMS, DCMITYPE, SOSA
 from namespace import LDES, TREE, PYLDES
-from config import AUTHORS, SERVER_ID
 from py_linq import Enumerable
 from py_linq.exceptions import NoMatchingElement
 from services.page_fragmentation import PageFragmentation
 from tools.ldes_server_exception import LdesServerError, LdesNotFoundError
+
+from dependency_injector.providers import Configuration
 
 class LdesService:
 
@@ -20,20 +21,25 @@ class LdesService:
     Note: storage provider is resolved using dependency injection.
     Abstract class to be provided later.
     '''
-    def __init__(self, storage_provider, base_uri: str):
+    def __init__(self, 
+            storage_provider, 
+            config: Configuration
+        ):
         self.storage_provider = storage_provider
-        self.base_uri = base_uri
+        self.config = config
+        self.base_uri = config['ldes']['base_uri']
 
     '''
     Gets all collections in this server and returns it as an RDF graph.
     '''
     def get_ldes_server_catalog(self) -> Graph:
         graph = self._bind_namespaces(Graph())
-        ldes_server = URIRef(SERVER_ID)
-        software = URIRef("http://purl.org/dc/dcmitype/Software")
+        ldes_server = URIRef(self.config['metadata']['server_id'])
+        software = URIRef("http://purl.org/dc/dcmitype/Software") # no def for this in the library :-(
         graph.add((ldes_server, RDF.type, software))
-        graph.add((ldes_server, DCTERMS.creator, Literal(AUTHORS)))
-        graph.add((ldes_server, DCTERMS.hasVersion, Literal(VERSION)))
+        for author in self.config['metadata']['authors']:
+            graph.add((ldes_server, DCTERMS.creator, Literal(author)))
+        graph.add((ldes_server, DCTERMS.hasVersion, Literal(self.config['metadata']['major_version'])))
 
         collections = self.storage_provider.get_ldes_collections()
         for collection in collections:

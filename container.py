@@ -17,7 +17,7 @@ class Container(containers.DeclarativeContainer):
     ldes_service = providers.Factory(
         LdesService,
         storage_provider = storage_provider,
-        base_uri = config.ldes.base_uri
+        config = config
     )
 
     page_fragmentation = providers.Factory(
