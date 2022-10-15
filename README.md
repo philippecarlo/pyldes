@@ -36,3 +36,8 @@ Running the server can be done from the root directory as follows:
 ```
 $ gunicorn -k eventlet -w1 --timeout 6000 server:app
 ```
+
+### using
+The server hosts an endpoint on localhst port 5000.
+You can point your browser to it or do a get request using nay HTTP client.
+You can follow the LDES/TREE links from there ;-).
