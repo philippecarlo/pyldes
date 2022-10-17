@@ -26,7 +26,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-LDES}
     ports:
-      - "9003:80"
+      - "5432:5432"
     networks:
       - pyldes
 networks:
