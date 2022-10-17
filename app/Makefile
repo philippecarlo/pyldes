@@ -19,7 +19,7 @@ build: $(VENV)/bin/activate
 	
 
 run: $(VENV)/bin/activate
-	$(GUNICORN) -k eventlet -w 1 --timeout 6000 server:app
+	$(GUNICORN) -k eventlet -w 1 --bind 0.0.0.0:5000 --timeout 6000 server:app
 
 $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
