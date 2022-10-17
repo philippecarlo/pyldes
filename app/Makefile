@@ -13,18 +13,20 @@ help: ## This help message
 VENV = venv
 PYTHON = $(VENV)/bin/python3
 PIP = $(VENV)/bin/pip
+GUNICORN = $(VENV)/bin/gunicorn
 
-build: requirements.txt
-	pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+build: $(VENV)/bin/activate
+	
 
 run: $(VENV)/bin/activate
-	gunicorn -k eventlet -w1 --timeout 6000 server:app
+	$(GUNICORN) -k eventlet -w 1 --timeout 6000 server:app
 
 $(VENV)/bin/activate: requirements.txt
 	python3 -m venv $(VENV)
+	$(PIP) install --upgrade pip
+	$(PIP) install wheel
 	$(PIP) install -r requirements.txt
 
 clean:
 	rm -rf __pycache__
 	rm -rf $(VENV)
- 

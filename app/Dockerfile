@@ -4,7 +4,6 @@ ARG PYTHON_IMAGE_NAME
 ARG PYTHON_IMAGE_VERSION
 
 FROM ${PYTHON_IMAGE_NAME}:${PYTHON_IMAGE_VERSION}
-WORKDIR /app
 
 #
 # Setup env
@@ -15,11 +14,17 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Don't buffer stdout and stderr
 ENV PYTHONUNBUFFERED 1
 
+# Install requirements
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc make gunicorn
-RUN pip install --upgrade pip
+    apt-get install -y --no-install-recommends make gunicorn
 
+# Add a user
+RUN useradd -d /app -ms /bin/bash pyldes
+USER pyldes
+WORKDIR /app
+
+# Setup the applicaton
 COPY . /app/
 RUN make build
 
-CMD ["gunicorn", "-k eventlet", "-w1", "--timeout 6000", "server:app"]
+CMD ["make", "run"]
