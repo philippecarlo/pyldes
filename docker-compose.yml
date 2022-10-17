@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  python:
+    image: ${PYTHON_IMAGE_TAG}:latest
+    container_name: ${PYTHON_CONTAINER_NAME:-app}
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile
+      args:
+        - PYTHON_IMAGE_NAME=${PYTHON_IMAGE_NAME}
+        - PYTHON_IMAGE_VERSION=${PYTHON_IMAGE_VERSION}
+    depends_on:
+      - storage
+    ports:
+      - "5000:5000"
+    networks:
+      - pyldes
+
+  storage:
+    image: postgres:${POSTGRES_IMAGE_VERSION:-15.0-alpine}
+    container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-LDES}
+    ports:
+      - "9003:80"
+    networks:
+      - pyldes
+networks:
+  pyldes: {}

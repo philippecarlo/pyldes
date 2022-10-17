@@ -17,12 +17,12 @@ A Python LDES Server
 ### Dependencies
 
 The PyLDES server is a Flask based LDES server written in Python3.
-Before running, check the dependency list in the Requirements.txt file.
+Before running, check the dependency list in the requirements.txt file.
 You can install them using the following command:
 ```
 $ pip3 install -r requirements.txt
 ```
-Running with socket support also requires guinicorn. Make sure to install it first.
+Running with socket support also requires gunicorn. Make sure to install it first.
 
 ### PostgreSQL
 
@@ -38,6 +38,6 @@ $ gunicorn -k eventlet -w1 --timeout 6000 server:app
 ```
 
 ### using
-The server hosts an endpoint on localhst port 5000.
-You can point your browser to it or do a get request using nay HTTP client.
+The server hosts an endpoint on localhost port 5000.
+You can point your browser to it or do a get request using any HTTP client.
 You can follow the LDES/TREE links from there ;-).
