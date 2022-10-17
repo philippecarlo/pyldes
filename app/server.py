@@ -194,4 +194,6 @@ def run_app():
 
 # run with sufficiently large timeout to prevent socket from killing the workers:
 # gunicorn -k eventlet -w1 --timeout 6000 server:app
-run_app()
+
+if __name__ == "__main__":
+    run_app()
