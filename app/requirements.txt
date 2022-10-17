@@ -10,7 +10,7 @@ rdflib==6.2.0
 rdflib-jsonld==0.6.2
 SQLAlchemy==1.4.40
 sqlalchemy-json==0.5.0
-dependency-injector==4.40.0
+dependency-injector==4.38.0
 flask-socketio==5.3.1
 markupsafe==2.1.1
 gevent-websocket==0.10.1

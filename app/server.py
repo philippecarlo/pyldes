@@ -179,21 +179,21 @@ def after_request(response):
     print (f"--> Request execution time {bcolors.UNDERLINE}{diff}{bcolors.ENDC}s.")
     return response
 
-def run_app():
-    app.container = Container()
-    app.debug = app.container.config.flask.debug() == "true"
-    app.send_file_max_age_default = int(app.container.config.flask.send_file_max_age_default())
-    app.container.wire(modules=[__name__])
-    WSGIRequestHandler.protocol_version = "HTTP/1.1"
-    print(bcolors.CYAN)
-    with open("logo.txt", 'r') as fin:
-        print(fin.read())
-    print(bcolors.ENDC)
-    app.socket_io_app = SocketIO(app, cors_allowed_origins="*", engineio_logger=True)
-    app.socket_io_app.run(app)
+
+app.container = Container()
+app.debug = app.container.config.flask.debug() == "true"
+app.send_file_max_age_default = int(app.container.config.flask.send_file_max_age_default())
+app.container.wire(modules=[__name__])
+WSGIRequestHandler.protocol_version = "HTTP/1.1"
+print(bcolors.CYAN)
+with open("logo.txt", 'r') as fin:
+    print(fin.read())
+print(bcolors.ENDC)
+app.socket_io_app = SocketIO(app, cors_allowed_origins="*", engineio_logger=True)
 
 # run with sufficiently large timeout to prevent socket from killing the workers:
 # gunicorn -k eventlet -w1 --timeout 6000 server:app
 
 if __name__ == "__main__":
-    run_app()
+    app.socket_io_app.run(app)
+
