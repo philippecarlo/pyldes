@@ -5,8 +5,9 @@ from rdflib import URIRef
 from tools.ldes_server_exception import LdesPresistenceError, LdesNotFoundError
 class PostgresStorageProvider:
 
-    def __init__(self, session_factory):
+    def __init__(self, session_factory, db):
         self.session_factory = session_factory
+        self.db = db
 
     # --- COLLECTIONS / LDES STREAMS --- #
     # to create and update TREE collections (in this case LDES streams)
@@ -215,3 +216,11 @@ class PostgresStorageProvider:
             members = session.query(TreeMember).filter(TreeMember.collection_id == collection_ref).offset(skip).limit(take)
             return members
 
+    def storage_ready(self):
+        return self.db.db_exists()
+    
+    def initialize_storage(self):
+        self.db.create_database()
+    
+    def teardown_storage(self):
+        self.db.drop_database()

@@ -194,3 +194,23 @@ class LdesService:
         graph.bind("sosa", SOSA)
         graph.bind("pyldes", PYLDES)
         return graph
+    
+    '''
+    A method for initializing storage
+    '''
+    def initialize_storage(self):
+        self.storage_provider.initialize_storage()
+
+    '''
+    A method for tearing down storage
+    '''
+    def teardown_storage(self):
+        self.storage_provider.teardown_storage()
+
+    '''
+    A method for checking if staorage is ready
+    '''
+    def storage_ready(self):
+        return self.storage_provider.storage_ready()
+
+

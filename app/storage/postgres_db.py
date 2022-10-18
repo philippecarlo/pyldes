@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, orm
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy_utils.functions import database_exists
 from contextlib import contextmanager, AbstractContextManager
 from typing import Callable
 from models.tree_base import Base
@@ -40,4 +41,6 @@ class PostgresDB:
 
     def drop_database(self):
         Base.metadata.drop_all(self._engine)
-
+    
+    def db_exists(self):
+        return database_exists(self._engine.url)

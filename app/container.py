@@ -12,6 +12,7 @@ class Container(containers.DeclarativeContainer):
     storage_provider = providers.Factory(
         PostgresStorageProvider,
         session_factory=db.provided.session,
+        db = db
     )
 
     ldes_service = providers.Factory(

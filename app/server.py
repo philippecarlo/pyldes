@@ -36,6 +36,14 @@ def index():
 def ldes(ldes_service: LdesService = Provide[Container.ldes_service]):
     content_type, accept_type = get_content_type(request)
     serialization_format = content_type_to_serialization_format(accept_type)
+
+    storage_ready = ldes_service.storage_ready()
+    if not storage_ready:
+        if serialization_format == "html":
+            return render_ldes_server(None)
+        else:
+            raise LdesServerError(f"Storage not initialized. Initialize it first with the /manage/init endpoint.")
+
     data = ldes_service.get_ldes_server_catalog()
     if serialization_format == "html":
         return render_ldes_server(data)
@@ -102,6 +110,10 @@ def get_ldes(
 @app.route('/ldes', methods = ['POST'])
 @inject
 def post(ldes_service: LdesService = Provide[Container.ldes_service], config: Configuration = Provide[Container.config]):
+    storage_ready = ldes_service.storage_ready()
+    if not storage_ready:
+        raise LdesServerError(f"Storage not initialized. Initialize it first with the /manage/init endpoint.")
+
     content_type, accept_type = get_content_type(request)
     serialization_format = content_type_to_serialization_format(accept_type)
     graph = None
@@ -150,14 +162,14 @@ def post(ldes_service: LdesService = Provide[Container.ldes_service], config: Co
 
 @app.route('/manage/init')
 @inject
-def init(db: PostgresDB = Provide[Container.db]):
-    db.create_database()
+def init(ldes_service: LdesService = Provide[Container.ldes_service]):
+    ldes_service.initialize_storage()
     return ('', 204)
 
 @app.route('/manage/teardown')
 @inject
-def teardown(db: PostgresDB = Provide[Container.db], ldes_cache: LdesCache = Provide[Container.ldes_cache]):
-    db.drop_database()
+def teardown(ldes_service: LdesService = Provide[Container.ldes_service], ldes_cache: LdesCache = Provide[Container.ldes_cache]):
+    ldes_service.teardown_storage()
     ldes_cache.clear()
     return ('', 204)
 

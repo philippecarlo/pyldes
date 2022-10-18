@@ -5,6 +5,8 @@ from rdflib import Graph
 from flask import render_template
 
 def render_ldes_server(data: Graph):
+    if data is None:
+        return render_template('ldes_server.html', title='Linked Data Event Stream Server', model=None, message='Storage not initialized, initialize it first.')
     _json = data.serialize(format='json-ld')
     _frame = { 
         "@context": { "https://w3id.org/tree#view": { "@reverse" : "http://www.w3.org/ns/dcat#servesDataset" } },
@@ -23,6 +25,7 @@ def render_ldes_server(data: Graph):
         if not isinstance(collection['https://w3id.org/tree#view'], list):
             view = collection['https://w3id.org/tree#view']
             collection['https://w3id.org/tree#view'] = [view]
+    
     return render_template('ldes_server.html', title='Linked Data Event Stream Server', model=collections)
     
 def render_ldes_node(data: Graph):

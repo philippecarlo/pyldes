@@ -10,7 +10,16 @@
 </style>
 
     <h1 class="blue-line">Server Index</h1>
+    
+    {% if message %}
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6 ">
+        {{ message}}
+        </div>
+    </div>
+    {% endif %}
 
+    {% if model %}
     <div class="row">
         {% for collection in model %}
         <div class="col-sm-12 col-md-12 col-lg-6 ldes_collection_wrapper">
@@ -41,4 +50,11 @@
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6 ">
+        No collections here yet!
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}
