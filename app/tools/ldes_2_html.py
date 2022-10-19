@@ -1,12 +1,14 @@
 
 import json
 from pyld import jsonld
-from rdflib import Graph
+from rdflib import Graph, URIRef
 from flask import render_template
 
 def render_ldes_server(data: Graph):
-    if data is None:
+    if data is None:  
         return render_template('ldes_server.html', title='Linked Data Event Stream Server', model=None, message='Storage not initialized, initialize it first.')
+    if (None, None, URIRef('https://w3id.org/ldes#EventStream')) not in data:
+        return render_template('ldes_server.html', title='Linked Data Event Stream Server', model=None, message='No collections yet!')
     _json = data.serialize(format='json-ld')
     _frame = { 
         "@context": { "https://w3id.org/tree#view": { "@reverse" : "http://www.w3.org/ns/dcat#servesDataset" } },
@@ -16,7 +18,7 @@ def render_ldes_server(data: Graph):
         }
     }
     server_details_graph = jsonld.frame(json.loads(_json), _frame)
-    collections = [ server_details_graph]  if not("@graph" in server_details_graph.keys()) else server_details_graph["@graph"]
+    collections = [ server_details_graph ]  if not("@graph" in server_details_graph.keys()) else server_details_graph["@graph"]
     # ensure views is a list
     # this is a bit ugly, I admit but I could not figure out how to solve this differently
     # JSONLD framing does not make a list of views when there is one view only
@@ -47,3 +49,6 @@ def render_ldes_collection(data: Graph):
 
 def render_ldes_socket_demo():
     return render_template('ldes_socket_demo.html', title='Linked Data Event Socket', model=None, json=json)
+
+def render_ldes_management_page():
+    return render_template('ldes_management.html', title='LDES Server Management', model=None)

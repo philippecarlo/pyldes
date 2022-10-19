@@ -8,8 +8,8 @@ flask:
   debug: "true"
   send_file_max_age_default: 3600
 ldes:
-  #base_uri: "http://localhost:5000"
   base_uri: "http://localhost:9000"
+  #base_uri: "http://localhost:5000"
   py_ldes_uri: "https://pyldes.org/"
 metadata:
   server_name: "imec EDiT - Linked Data Event Streaming experimental server"

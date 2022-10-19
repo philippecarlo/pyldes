@@ -20,7 +20,7 @@ from storage.postgres_db import PostgresDB
 from namespace import LDES, TREE
 
 # tools and instrumentation
-from tools.ldes_2_html import render_ldes_server, render_ldes_node, render_ldes_socket_demo
+from tools.ldes_2_html import render_ldes_server, render_ldes_node, render_ldes_socket_demo, render_ldes_management_page
 from tools.ldes_cache import LdesCache
 from tools.ldes_server_exception import LdesNotFoundError, LdesServerError
 from tools.bcolors import bcolors
@@ -159,6 +159,10 @@ def post(ldes_service: LdesService = Provide[Container.ldes_service], config: Co
 
     # finally: return the result collection along with views
     return '', 204, {'Content-Type': accept_type }
+
+@app.route('/manage')
+def manage():
+    return render_ldes_management_page(), 200
 
 @app.route('/manage/init')
 @inject

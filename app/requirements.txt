@@ -9,6 +9,7 @@ more-itertools==4.2.0
 rdflib==6.2.0
 rdflib-jsonld==0.6.2
 SQLAlchemy==1.4.40
+SQLAlchemy-Utils==0.38.3
 sqlalchemy-json==0.5.0
 dependency-injector==4.38.0
 flask-socketio==5.3.1

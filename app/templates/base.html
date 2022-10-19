@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 
     <style>
+        nav a, nav a:hover, nav a:visited { cursor: pointer;  color: #3c3c3b; text-decoration: none; }
+        
         body { background-color: #f0f0f0; color: #3c3c3b; font-family: Agenda, "Arial, Helvetica", sans-serif; }
         table { width: 100%; border:0px; table-layout: fixed;}
         table tr { border: 0px; }
@@ -22,12 +24,28 @@
         h1 { font-size: 18pt; line-height: 1.5; font-weight:500; }
         .page_title { font-size: 24pt; font-weight:500; color: #f0f0f0; line-height: 3.5em; }
         .blue-line::before { content: ""; width: 1.5625rem; height: .3125rem; display: block; background-color: #3f97bd; margin-bottom: .875rem; }
-    </style>
+        .header-nav-item { height: 100%; display: inline-block; vertical-align: top;  }
+        .header-nav-item a {  height: 100%; position: relative; display: flex; align-items: center; padding: .75em; transition: all .25s ease-out;  }
+        .header-nav-item a:after { content: ""; background-color: #3f97bd; width: 100%; height: .25em; position: absolute; left: 0; bottom: 0; transform: scaleX(0); transform-origin: right center; transition: transform .25s ease-out; }
+        .header-nav-item:hover a:after { transform: scaleX(1); transform-origin: left center; }
+        .header-nav-item:hover a { background-color: #fff; }
+</style>
 </head>
 
 <body>
     <header>
     <img class="header_logo" src="/static/img/imec-logo.svg" alt="imec logo">
+    <nav>
+        <div class="header-nav-item">
+            <a href="/ldes">Home</a>
+        </div>
+        <div class="header-nav-item">
+            <a href="/socketdemo">Web Socket Demo</a>
+        </div>
+        <div class="header-nav-item">
+            <a href="/manage">Manage Server</a>
+        </div>
+    </nav>
     </header>
     <section class="header_container">
         <div class="page_title">{{ title }}</div>        

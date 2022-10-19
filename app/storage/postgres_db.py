@@ -1,3 +1,4 @@
+import sqlalchemy as sa 
 from sqlalchemy import create_engine, orm
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
@@ -43,4 +44,9 @@ class PostgresDB:
         Base.metadata.drop_all(self._engine)
     
     def db_exists(self):
-        return database_exists(self._engine.url)
+        if database_exists(self._engine.url):
+            insp = sa.inspect(self._engine)
+            table_present = insp.has_table("TreeCollection", schema="public")
+            return table_present
+        else:
+            return False
