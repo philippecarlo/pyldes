@@ -17,6 +17,7 @@ class TreeView(Base, TreeBase):
     max_node_size = Column(Integer, nullable=True)
     path = Column(String(2048))
     alias = Column(String(50), unique=True)
+    sequence_type = Column(String(50))
 
     # relationships
     collection = relationship("TreeCollection", back_populates="views")

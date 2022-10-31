@@ -46,8 +46,10 @@ class LdesCache:
         self.remove_least_recently_used()
 
     def store_to_disk(self, key, value):
+        if not os.path.exists(self.cache_dir):
+            os.mkdir(self.cache_dir)
         filename = os.path.join(self.cache_dir, f"{key}.ttl")
-        with open(filename, 'w') as f:
+        with open(filename, 'w+') as f:
             f.write(value)
 
     def remove_least_recently_used(self):

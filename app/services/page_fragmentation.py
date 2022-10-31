@@ -1,4 +1,6 @@
 import os
+import datetime
+import traceback
 from rdflib import Graph, BNode, Literal, RDF, URIRef
 from namespace import LDES, TREE, PYLDES
 from py_linq import Enumerable
@@ -25,9 +27,15 @@ class PageFragmentation:
         self.view_alias = Enumerable(self.graph.objects(self.view_description_ref, PYLDES.alias)).single()
         if not(self.view_description_ref):
             raise LdesServerError("Internal error: No view description passed to PageFragmentation module.")
+
+        self.path = self.graph.value(self.view_description_ref, TREE.path)
+        self.sequence_type = self.graph.value(self.view_description_ref, PYLDES.sequence_type)
         self.max_node_size = int(self.graph.value(self.view_description_ref, PYLDES.maxNodeSize))
         if not(self.max_node_size):
             self.max_node_size = DEFAULT_MAX_NODE_SIZE
+        
+        #TODO: validate that a sequence path is given
+            
 
     '''
     Gets a view node and returns it as a graph.
@@ -40,21 +48,27 @@ class PageFragmentation:
         self.graph.add((node_ref, TREE.viewDescription, self.view_description_ref))
         
 
+        self._add_node_memebers(node_id)
+        min, max = self.get_fragment_min_max_value()
+
         if not(node_id == last_node):
             previous_relation = BNode()
             self.graph.add((previous_relation, RDF.type, TREE.GreaterThanRelation))
+            self.graph.add((previous_relation, TREE.path, self.path))
             self.graph.add((previous_relation, TREE.node, URIRef(f"{self.base_uri}/ldes/{self.collection_alias}/{self.view_alias}?node={node_id+1}")))
-            self.graph.add((previous_relation, TREE.value, Literal(node_id+1)))
+            #self.graph.add((previous_relation, TREE.value, Literal(node_id+1)))
+            self.graph.add((previous_relation, TREE.value, Literal(max)))
             self.graph.add((node_ref, TREE.relation, previous_relation))
 
         if node_id > 1:
             next_relation = BNode()
             self.graph.add((next_relation, RDF.type, TREE.LessThanRelation))
+            self.graph.add((next_relation, TREE.path, self.path))
             self.graph.add((next_relation, TREE.node, URIRef(f"{self.base_uri}/ldes/{self.collection_alias}/{self.view_alias}?node={node_id-1}")))
-            self.graph.add((next_relation, TREE.value, Literal(node_id-1)))
+            #self.graph.add((next_relation, TREE.value, Literal(node_id-1)))
+            self.graph.add((next_relation, TREE.value, Literal(min)))
             self.graph.add((node_ref, TREE.relation, next_relation))
 
-        self._add_node_memebers(node_id)
         return self.graph
     
     '''
@@ -62,7 +76,8 @@ class PageFragmentation:
     '''
     def _add_node_memebers(self, node_id):
         skip = (node_id -1) * self.max_node_size
-        members = self.storage_provider.get_ldes_members(self.collection_ref, skip, self.max_node_size)
+        skip = 0 if skip < 0 else skip
+        members = self.storage_provider.get_ldes_members(self.collection_ref, self.path, self.sequence_type.toPython(), skip, self.max_node_size)
         buffer = str()
         for member in members:
             self.graph.add((self.collection_ref, TREE.member, URIRef(member.id)))
@@ -86,3 +101,9 @@ class PageFragmentation:
         remainder_members = member_count % self.max_node_size
         last_node = nr_of_full_nodes if remainder_members == 0 else nr_of_full_nodes +1
         return last_node
+
+    def get_fragment_min_max_value(self):
+        values = []
+        for s, p, o in self.graph.triples((None, URIRef(self.path), None)):
+            values.append(o.value)
+        return min(values) if len(values) > 0 else None, max(values) if len(values) > 0 else None

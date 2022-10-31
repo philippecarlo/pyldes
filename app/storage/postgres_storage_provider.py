@@ -1,8 +1,10 @@
 from typing import List
+from sqlalchemy import desc, Integer, DateTime
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import SQLAlchemyError
 from models import Ldes, TreeCollection, TreeView, TreeMember
 from rdflib import URIRef
-from tools.ldes_server_exception import LdesPresistenceError, LdesNotFoundError
+from tools.ldes_server_exception import LdesPresistenceError, LdesNotFoundError, LdesServerError
 class PostgresStorageProvider:
 
     def __init__(self, session_factory, db):
@@ -21,7 +23,7 @@ class PostgresStorageProvider:
             try:
                 spec = session.query(TreeCollection).options(joinedload(TreeCollection.views)).filter(TreeCollection.id==collection_ref).one()
                 return spec
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 raise LdesNotFoundError(e)
 
     def get_ldes_collection_by_alias(self, collection_alias: str) -> TreeCollection:
@@ -29,7 +31,7 @@ class PostgresStorageProvider:
             try:
                 spec = session.query(TreeCollection).options(joinedload(TreeCollection.views)).filter(TreeCollection.alias==collection_alias).one()
                 return spec
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 raise LdesNotFoundError(e)            
 
     def create_ldes_collection(
@@ -48,7 +50,7 @@ class PostgresStorageProvider:
                 session.add(ldes)
                 session.commit()
                 session.refresh(ldes)
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
@@ -76,7 +78,7 @@ class PostgresStorageProvider:
                 session.commit()
                 session.refresh(ldes)
                 return ldes
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 session.rollback()
                 raise LdesPresistenceError(e)
             
@@ -98,7 +100,7 @@ class PostgresStorageProvider:
             try:
                 views = session.query(TreeView).filter(TreeView.id == view_ref).one()
                 return views
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 raise LdesNotFoundError(e)
 
     def get_ldes_view_by_alias(self, view_alias: str) -> TreeView:
@@ -106,7 +108,7 @@ class PostgresStorageProvider:
             try:
                 spec = session.query(TreeView).filter(TreeView.alias==view_alias).one()
                 return spec
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 raise LdesNotFoundError(e)
 
     def create_ldes_view(self, 
@@ -114,18 +116,24 @@ class PostgresStorageProvider:
             view_description_ref: URIRef, 
             view_alias: str, 
             fragmentation_kind: URIRef, 
-            max_node_size: int)-> TreeView:
+            max_node_size: int,
+            path: URIRef,
+            sequence_type:str)-> TreeView:
         with self.session_factory() as session:
             try:
                 view = TreeView()
                 view.collection_id = collection_ref
+                view.id = view_description_ref
+                view.alias = view_alias
                 view.fragmentation_kind = fragmentation_kind
+                view.path = path
                 view.max_node_size = max_node_size
+                view.sequence_type = sequence_type
                 session.flush()
                 session.commit()
                 session.refresh(view)
                 return view
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
@@ -134,7 +142,9 @@ class PostgresStorageProvider:
             view_description_ref: URIRef, 
             view_alias: str, 
             fragmentation_kind: URIRef, 
-            max_node_size: int) -> TreeView:
+            max_node_size: int,
+            path: URIRef,
+            sequence_type:str) -> TreeView:
         with self.session_factory() as session:
             try:
                 view = session.query(TreeView).get(view_description_ref)
@@ -142,13 +152,16 @@ class PostgresStorageProvider:
                     raise LdesNotFoundError(f"Tree view {view_description_ref} does not exist.")
                 else:
                     view.collection_id = collection_ref
+                    view.alias = view_alias
                     view.fragmentation_kind = fragmentation_kind
+                    view.path = path
                     view.max_node_size = max_node_size
+                    view.sequence_type = sequence_type
                     session.flush()
                     session.commit()
                     session.refresh(view)
                     return view
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
@@ -158,7 +171,9 @@ class PostgresStorageProvider:
             view_description_ref: URIRef, 
             view_alias: str, 
             fragmentation_kind: URIRef, 
-            max_node_size: int):
+            max_node_size: int,
+            path: URIRef,
+            sequence_type:str):
         with self.session_factory() as session:
             try:
                 view = session.query(TreeView).get(view_description_ref)
@@ -169,16 +184,20 @@ class PostgresStorageProvider:
                     view.alias = view_alias
                     view.fragmentation_kind = fragmentation_kind
                     view.max_node_size = max_node_size
+                    view.path = path
+                    view.sequence_type = sequence_type
                     session.add(view)
                 else:
                     view.collection_id = collection_ref
                     view.fragmentation_kind = fragmentation_kind
                     view.max_node_size = max_node_size
+                    view.path = path
+                    view.sequence_type = sequence_type
                     session.flush()
                 session.commit()
                 session.refresh(view)
                 return view
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
@@ -202,7 +221,7 @@ class PostgresStorageProvider:
                 session.commit()
                 session.refresh(m)
                 return m
-            except exc.SQLAlchemyError as e:
+            except SQLAlchemyError as e:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
@@ -211,10 +230,29 @@ class PostgresStorageProvider:
             member_count = session.query(TreeMember).filter(TreeMember.collection_id == collection_ref).count()
             return member_count
     
-    def get_ldes_members(self,  collection_ref: URIRef, skip: int, take: int) -> List[TreeMember]:
+    def get_ldes_members(self, collection_ref: URIRef, path_ref: URIRef, sequence_type: str, skip: int, take: int) -> List[TreeMember]:
         with self.session_factory() as session:
-            members = session.query(TreeMember).filter(TreeMember.collection_id == collection_ref).offset(skip).limit(take)
-            return members
+            if sequence_type == "xsd:int":
+                members = session.query(TreeMember)\
+                    .filter(TreeMember.collection_id == collection_ref)\
+                    .order_by(desc(TreeMember.json[f"{path_ref}"].astext.cast(Integer)))\
+                    .offset(skip).limit(take)
+                return members
+            elif sequence_type == "xsd:dateTime":
+                members = session.query(TreeMember)\
+                    .filter(TreeMember.collection_id == collection_ref)\
+                    .order_by(desc(TreeMember.json[f"{path_ref}"]["@value"].astext.cast(DateTime)))\
+                    .offset(skip).limit(take)
+                return members
+            elif sequence_type == "xsd:string":
+                members = session.query(TreeMember)\
+                    .filter(TreeMember.collection_id == collection_ref)\
+                    .order_by(desc(TreeMember.json[f"{path_ref}"].astext))\
+                    .offset(skip).limit(take)
+                return members
+            else:
+                msg = f"Unsupported pyldes:sequence_type '{sequence_type}'"
+                raise LdesServerError(msg)
 
     def storage_ready(self):
         return self.db.db_exists()

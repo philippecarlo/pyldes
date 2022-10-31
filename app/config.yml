@@ -1,6 +1,5 @@
 db:
   postgres_url: "postgresql+psycopg2://pyldes:pyldes@storage:5432/pyldes"
-  #postgres_url: "postgresql+psycopg2://postgres:postgres@localhost:5432/LDES"
 cache:
   max_entries: 10000
   directory: "__cache__"
