@@ -1,0 +1,4 @@
+<http://example.smartdataspace.localhost:8080/persons/huppeldepup/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person>.
+<http://example.smartdataspace.localhost:8080/persons/huppeldepup/1> <http://purl.org/dc/terms/isVersionOf> <http://example.smartdataspace.localhost:8080/persons/huppeldepup>.
+<http://example.smartdataspace.localhost:8080/persons/huppeldepup/1> <http://www.w3.org/ns/prov#generatedAtTime> "2020-12-21T15:15:59.817Z".
+<http://example.smartdataspace.localhost:8080/persons/huppeldepup/1> <http://schema.org/name> "Huppel De Pup".
