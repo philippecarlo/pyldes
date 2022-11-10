@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .ldes_collection_wrapper { padding: 10px }
+    .ldes_collection {  box-shadow: 0 0.9375rem 1.5625rem 0 rgb(0 0 0 / 5%);   }
+    .ldes_collection_header { background-color: #3f97bd; color: #f0f0f0; min-height: 35px; border: 1px solid #3f97bd;
+        font-size: 20px; font-weight: 500; line-height: 33px;  }
+
+</style>
+<script type="text/javascript">
+    function manage_init() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("output").innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "/manage/init", true);
+        xhttp.send();
+    }
+
+    function manage_teardown() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("output").innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "/manage/teardown", true);
+        xhttp.send();
+    }
+</script>
+
+    <h1 class="blue-line">Server Management</h1>
+
+    <button type="button" onclick="manage_init()">Init Server</button>
+    <button type="button" onclick="manage_teardown()">Tear Down Server</button>
+
+    <div id="output">
+    </div>
+{% endblock %}
