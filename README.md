@@ -33,6 +33,8 @@ make help
 make build
 ```
 #### To start a Pyldes locally
+This will only start the Pyldes service. It is expected that a local or dockerized Postgress service already is 
+deployed.
 ```shell
 make run
 ```
