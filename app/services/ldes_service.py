@@ -105,6 +105,9 @@ class LdesService:
     def get_ldes_collection_spec(self, collection_ref: URIRef) -> TreeCollection:
         return self.storage_provider.get_ldes_collection(collection_ref)
     
+    def get_ldes_collection_spec_by_alias(self, alias: URIRef) -> TreeCollection:
+        return self.storage_provider.get_ldes_collection_by_alias(alias)
+    
     '''
     Creates an LDES collection or updates it (if it exist)
     '''
@@ -148,6 +151,7 @@ class LdesService:
         member_graph = Graph()
         for t in graph.triples((member_ref, None, None)):
             member_graph.add(t)
+        # todo: how to identify/get full subgraph?
         member_data = member_graph.serialize(format='turtle')
         member_json = member_graph.serialize(format='json-ld')
         member_doc = json.loads(member_json)
