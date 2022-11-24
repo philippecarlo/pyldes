@@ -16,17 +16,79 @@ A Python LDES Server
 
 ## Running en testing
 
+### Local Setup
+The easiest way to configure your local setup is via the Make actions executed from within the [app](app) directory of 
+this project.
+
+#### To check the supported Make actions
+```shell
+make 
+```
+or
+```shell
+make help
+```
+#### Activate a Python virtual environment and install the application dependencies
+```shell
+make build
+```
+#### To start a Pyldes locally
+```shell
+make run
+```
+#### To clean the local build environment
+```shell
+make clean
+```
+
 ### Dependencies
 
 The PyLDES server is a Flask based LDES server written in Python3.
-Before running, check the dependency list in the requirements.txt file.
-You can install them using the following command:
+Before running, check the dependency list in the [requirements.txt](app/requirements.txt) file.
 
+One can install the dependencies listed in the requirements.txt file via:
 ```
-$ pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 ```
+or by building the local environment as described in [Local Setup](#local-setup)
 
-Running with socket support also requires gunicorn. Make sure to install it first.
+Running with socket support also requires gunicorn. This is also part of the requirements.txt file and
+will be deployed together with the other application dependencies.
+
+### Docker
+Before one build the Docker containers one needs to check if the configuration values in [pyldes.env](pyldes.env)
+are correctly set.
+
+In the [docker-compose.yml](docker-compose.yml) one can see that following Dockers containers will be build
+and launched based on the given Make action.
+* Pyldes
+* Postgress
+
+The below listed Make actions need to be executed from within the root of the project.
+This [Makefile](Makefile) has a dependency on the [pyldes.env](pyldes.env) configuration file and the 
+[Makefile](app/Makefile) from the [app](app) directory
+
+#### To check the supported Make actions
+```shell
+make 
+```
+or
+```shell
+make help
+```
+#### To build the Docker containers
+This action will automatically remove (if exists) the Python virtual environment from with the [app](app) folder.
+```shell
+make build
+```
+#### To run the Docker containers
+```shell
+make run
+```
+#### To stop the Docker containers
+```shell
+make stop
+```
 
 ### PostgreSQL
 
@@ -124,14 +186,6 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 
 
   '
-```
-
-### running
-
-Running the server can be done from the root directory as follows:
-
-```
-$ gunicorn -k eventlet -w1 --timeout 6000 server:app
 ```
 
 ### using

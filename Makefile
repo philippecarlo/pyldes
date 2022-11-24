@@ -11,10 +11,10 @@ help: ## This help message
 .DEFAULT_GOAL := help
 
 build: ## Build the containers
-	docker-compose --env-file .env build
+	docker compose --env-file pyldes.env build
 
 run: ## Run the containers
-	docker-compose --env-file .env up
+	docker compose --env-file pyldes.env up
 
 stop: ## Stop the running containers
-	docker-compose stop
+	docker compose stop
