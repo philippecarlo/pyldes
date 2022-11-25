@@ -162,7 +162,7 @@ class LdesService:
         if ldes_spec.member_frame:
             member_frame = json.loads(ldes_spec.member_frame)
             framed_json = jsonld.frame(member_doc, member_frame)
-            print(framed_json)
+            #print(framed_json)
             added_member = self.storage_provider.add_ldes_member(collection_ref, member_ref, framed_json, member_data)
         else:
             added_member = self.storage_provider.add_ldes_member(collection_ref, member_ref, member_doc, member_data)

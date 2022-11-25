@@ -187,17 +187,24 @@ def post_to_collection(collection_alias:str, ldes_service: LdesService = Provide
     member_type = request.args.get("member_type")
     if not member_type:
         members = graph.triples((None, TREE.memberOf, URIRef(ldes_collection_spec.id)))
+        # step 3: add members
+        for member_ref, __, collection_ref  in members:
+            try:
+                added_member = ldes_service.add_ldes_member(graph, collection_ref, member_ref)
+                app.socket_io_app.emit("tree:member", added_member.rdf, json=False, broadcast=True)
+            except Exception as ex4:
+                print(f"Could not add member {member_ref}. Reason:  {str(ex4)}.")
+                #traceback.print_exc()
     else:
         members = graph.triples((None, RDF.type, URIRef(member_type)))
-
-    # step 3: add members
-    for member_ref, __, collection_ref  in members:
-        try:
-            added_member = ldes_service.add_ldes_member(graph, collection_ref, member_ref)
-            app.socket_io_app.emit("tree:member", added_member.rdf, json=False, broadcast=True)
-        except Exception as ex4:
-            print(f"Could not add member {member_ref}. Reason:  {str(ex4)}.")
-            #traceback.print_exc()
+        # step 3: add members
+        for member_ref, __, ___  in members:
+            try:
+                added_member = ldes_service.add_ldes_member(graph, URIRef(ldes_collection_spec.id), member_ref)
+                app.socket_io_app.emit("tree:member", added_member.rdf, json=False, broadcast=True)
+            except Exception as ex4:
+                print(f"Could not add member {member_ref}. Reason:  {str(ex4)}.")
+                #traceback.print_exc()
 
     # finally: return the result collection along with views
     return '', 204, {'Content-Type': accept_type }
