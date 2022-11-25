@@ -3,6 +3,10 @@
 #
 # Outputs the help for each task
 
+VENV = venv
+PIP = $(VENV)/bin/pip
+GUNICORN = $(VENV)/bin/gunicorn
+
 .PHONY: help
 
 help: ## This help message
@@ -10,23 +14,17 @@ help: ## This help message
 
 .DEFAULT_GOAL := help
 
-VENV = venv
-PYTHON = $(VENV)/bin/python3
-PIP = $(VENV)/bin/pip
-GUNICORN = $(VENV)/bin/gunicorn
-
-build: $(VENV)/bin/activate
-	
-
-run: $(VENV)/bin/activate
-	$(GUNICORN) -k eventlet -w 1 --bind 0.0.0.0:5000 --timeout 6000 server:app
-
-$(VENV)/bin/activate: requirements.txt
+build: ## Activate a virtual environment and install application dependencies
+	if [ -d "$(VENV)" ]; then rm -rf $(VENV); fi
 	python3 -m venv $(VENV)
 	$(PIP) install --upgrade pip
 	$(PIP) install wheel
 	$(PIP) install -r requirements.txt
 
-clean:
+run: ## Run the Pyldes
+	. $(VENV)/bin/activate
+	$(GUNICORN) -k eventlet -w 1 --bind 0.0.0.0:5000 --timeout 6000 server:app
+
+clean: ## Clean local build environment
 	rm -rf __pycache__
 	rm -rf $(VENV)
