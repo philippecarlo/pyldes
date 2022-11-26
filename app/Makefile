@@ -22,7 +22,7 @@ build: ## Activate a virtual environment and install application dependencies
 	$(PIP) install -r requirements.txt
 
 run: ## Run the Pyldes
-	. $(VENV)/bin/activate
+	$(VENV)/bin/activate
 	$(GUNICORN) -k eventlet -w 1 --bind 0.0.0.0:5000 --timeout 6000 server:app
 
 clean: ## Clean local build environment

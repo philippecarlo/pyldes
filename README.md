@@ -101,18 +101,13 @@ proper privileges and configure the endpoint URL in the config.yml file.
 To use the service, you need to seed the database using the following command:
 
 ```shell
-curl --request GET \
-  --url http://localhost:5000/manage/init
+curl --request GET --url http://localhost:5000/manage/init
 ```
 
 At this time, the service also requires that at least one collection is created in storage:
 
 ```shell
-curl -X POST  -d "@data/initial.nq" -H "Content-Type: text/turtle" -H "Accept: text/turtle" localhost:5000/ldes
-```
-
-```shell
-curl -X POST -d "@data/testdata.nq" -H "Content-Type: application/n-quads" localhost:5000/ldes
+curl -X POST  -d "@data/initial.ttl" -H "Content-Type: text/turtle" -H "Accept: text/turtle" localhost:5000/ldes
 ```
 
 ### using
