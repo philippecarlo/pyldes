@@ -133,3 +133,6 @@ dmypy.json
 
 # logging
 logs/
+
+# DB
+postgres-data
