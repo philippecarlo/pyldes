@@ -55,6 +55,15 @@ Validation according to this shape can be done using https://github.com/RDFLib/p
 ## provide proper logging and tracing and performance monitoring
 See https://flask.palletsprojects.com/en/2.2.x/logging/
 
+## Summery of ToDo's After Alignment (Daniel - Philippe)
+* ~~add .env placeholder file containing the default supported environment variables~~ (done)
+* change default IP Port to 8090 or at least different from 3000 and 5000 which are IP ports used
+  by MacOS system
+* expose Docker image via GitHub registry so one can depend on it directly
+* extend `docker-compose.yml` with support to bind a volume
+    * Postgres DB Docker image
+    * Pyldes Docker image => if one might want to re-use stored cached files? => TBD
+* Add tracing for performance testing
 
 =============
 ======== DONE

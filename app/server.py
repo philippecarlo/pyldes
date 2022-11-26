@@ -7,7 +7,7 @@ from zipapp import create_archive
 from flask import Flask, redirect, request, g
 from flask_socketio import SocketIO
 from werkzeug.serving import WSGIRequestHandler
-from rdflib import Graph, RDF
+from rdflib import Graph, RDF, URIRef
 from rdflib.namespace import DCAT
 from dependency_injector.wiring import inject, Provide
 from dependency_injector.providers import Configuration
@@ -154,11 +154,61 @@ def post(ldes_service: LdesService = Provide[Container.ldes_service], config: Co
             added_member = ldes_service.add_ldes_member(graph, collection_ref, member_ref)
             app.socket_io_app.emit("tree:member", added_member.rdf, json=False, broadcast=True)
         except Exception as ex4:
-            traceback.print_exc()
-            return (f'Failed to process LDES member: {str(ex4)}', 400, {'Content-Type': 'text/plain' })
+            print(f"Could not add member {member_ref}. Reason:  {str(ex4)}.")
+            #traceback.print_exc()
 
     # finally: return the result collection along with views
     return '', 204, {'Content-Type': accept_type }
+
+@app.route('/ldes/<collection_alias>', methods = ['POST'])
+@inject
+def post_to_collection(collection_alias:str, ldes_service: LdesService = Provide[Container.ldes_service], config: Configuration = Provide[Container.config]):
+    storage_ready = ldes_service.storage_ready()
+    if not storage_ready:
+        raise LdesServerError(f"Storage not initialized. Initialize it first with the /manage/init endpoint.")
+
+    content_type, accept_type = get_content_type(request)
+    serialization_format = content_type_to_serialization_format(accept_type)
+    graph = None
+
+    # step 0: check for valid RDF data if data is submitted
+    if request.data:
+        try:
+            graph = parse_data(request.data, content_type)
+        except Exception as ex1:
+            return f'Failed to parse data: {str(ex1)}', 400, {'Content-Type': 'text/plain' }
+    
+    # step 1: resolve collection alias
+    ldes_collection_spec = ldes_service.get_ldes_collection_spec_by_alias(collection_alias)
+    if not ldes_collection_spec:
+        return (f'Failed to add member(s): no collection with alias {collection_alias}.', 400, {'Content-Type': 'text/plain' })
+
+    # step 2: get member type from paramter
+    member_type = request.args.get("member_type")
+    if not member_type:
+        members = graph.triples((None, TREE.memberOf, URIRef(ldes_collection_spec.id)))
+        # step 3: add members
+        for member_ref, __, collection_ref  in members:
+            try:
+                added_member = ldes_service.add_ldes_member(graph, collection_ref, member_ref)
+                app.socket_io_app.emit("tree:member", added_member.rdf, json=False, broadcast=True)
+            except Exception as ex4:
+                print(f"Could not add member {member_ref}. Reason:  {str(ex4)}.")
+                #traceback.print_exc()
+    else:
+        members = graph.triples((None, RDF.type, URIRef(member_type)))
+        # step 3: add members
+        for member_ref, __, ___  in members:
+            try:
+                added_member = ldes_service.add_ldes_member(graph, URIRef(ldes_collection_spec.id), member_ref)
+                app.socket_io_app.emit("tree:member", added_member.rdf, json=False, broadcast=True)
+            except Exception as ex4:
+                print(f"Could not add member {member_ref}. Reason:  {str(ex4)}.")
+                #traceback.print_exc()
+
+    # finally: return the result collection along with views
+    return '', 204, {'Content-Type': accept_type }
+
 
 @app.route('/manage')
 def manage():
