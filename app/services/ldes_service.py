@@ -153,13 +153,13 @@ class LdesService:
         view_alias = graph.value(view_description_ref, PYLDES.alias)
         max_node_size = graph.value(view_description_ref, PYLDES.maxNodeSize)
         path = graph.value(view_description_ref, TREE.path)
-        sequence_type = graph.value(view_description_ref, PYLDES.sequence_type)
-        if not sequence_type:
-            raise LdesServerError(
-                f"A pyldes:sequence_type property denoting the type of the tree:path view property is required.")
-        if str(sequence_type) not in ("xsd:string", "xsd:int", "xsd:dateTime"):
-            raise LdesServerError(
-                f"The provided pyldes:sequence_type {sequence_type} is not supported. Supported types are: 'xsd:string', 'xsd:int', 'xsd:dateTime'.")
+        sequence_type = graph.value(view_description_ref, PYLDES.sequenceType)
+        # if not sequence_type:
+        #     raise LdesServerError(
+        #         f"A pyldes:sequence_type property denoting the type of the tree:path view property is required.")
+        # if str(sequence_type) not in ("xsd:string", "xsd:int", "xsd:dateTime"):
+        #     raise LdesServerError(
+        #         f"The provided pyldes:sequence_type {sequence_type} is not supported. Supported types are: 'xsd:string', 'xsd:int', 'xsd:dateTime'.")
         view = self.storage_provider.create_or_update_ldes_view(
             collection_ref, view_description_ref, view_alias, fragmentation_kind, max_node_size, path, sequence_type)
         return view
@@ -224,7 +224,7 @@ class LdesService:
         if (view_description.path):
             graph.add((view_ref, TREE.path, URIRef(view_description.path)))
         if (view_description.sequence_type):
-            graph.add((view_ref, PYLDES.sequence_type,
+            graph.add((view_ref, PYLDES.sequenceType,
                       Literal(view_description.sequence_type)))
         if (view_description.max_node_size):
             graph.add((view_ref, PYLDES.maxNodeSize,

@@ -19,7 +19,7 @@ build: ## Build the containers (with env file pyldes.env)
 		docker compose --env-file ./pyldes.env up & \
 		./scripts/wait-for-it.sh localhost:5000 -q; \
 		./scripts/wait-for-it.sh localhost:9432 -q; \
-		sleep 10s; \
+		sleep 5s; \
 		curl --request GET --url http://localhost:5000/manage/init; \
 		curl -X POST  -d "@data/initial.ttl" -H "Content-Type: text/turtle" -H "Accept: text/turtle" localhost:5000/ldes; \
 		docker compose --env-file ./pyldes.env stop; \

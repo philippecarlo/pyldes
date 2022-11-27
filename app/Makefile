@@ -15,7 +15,7 @@ help: ## This help message
 .DEFAULT_GOAL := help
 
 build: ## Activate a virtual environment and install application dependencies
-	@if [ -d "$(VENV)" ]; then rm -rf $(VENV); fi
+	if [ -n ${CLEAN_VENV} ] && [ ${CLEAN_VENV} = "true" ] && [ -d "$(VENV)" ]; then rm -rf $(VENV); fi
 	@python3 -m venv $(VENV)
 	@$(PIP) install --upgrade pip
 	@$(PIP) install wheel

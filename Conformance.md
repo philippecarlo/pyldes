@@ -19,7 +19,7 @@ Caching
 
 From the spec
 ===
-Collecitons
+Collections
 ---
  - [SHOULD] Every LDES collection has a Shape specification (SHACL/Shex)
  - [SHOULD] Every LDDES collection has at least one view? [Verify]

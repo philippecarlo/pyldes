@@ -15,58 +15,57 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 
 <SampleMember1> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "121"^^xsd:float;
+  sosa:hasSimpleResult "121"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember2> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "122"^^xsd:float;
+  sosa:hasSimpleResult "122"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember3> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "123"^^xsd:float;
+  sosa:hasSimpleResult "123"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember4> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "124"^^xsd:float;
+  sosa:hasSimpleResult "124"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember5> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "125"^^xsd:float;
+  sosa:hasSimpleResult "125"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember6> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "126"^^xsd:float;
+  sosa:hasSimpleResult "126"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember7> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "127"^^xsd:float;
+  sosa:hasSimpleResult "127"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember8> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "128"^^xsd:float;
+  sosa:hasSimpleResult "128"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember9> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "129"^^xsd:float;
+  sosa:hasSimpleResult "129"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 <SampleMember10> a sosa:Observation;
   sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "130"^^xsd:float;
+  sosa:hasSimpleResult "130"^^xsd:int;
   tree:memberOf <https://pyldes.org/SampleEventStream> .
 
 
-<SamplePageSizeView>
-  a tree:ViewDescription;
+<SamplePageSizeView> a tree:ViewDescription;
   pyldes:alias "SampleView";
   dcat:servesDataset <https://pyldes.org/SampleEventStream>;
   pyldes:fragmentationKind pyldes:PageFragmentation;
-  pyldes:maxNodeSize "4"^^xsd:int.
+  pyldes:maxNodeSize "4"^^xsd:int .
