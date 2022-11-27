@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Install requirements
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends make curl
+    apt-get install -y --no-install-recommends make
 
 # Add a user
 RUN useradd -d /app -ms /bin/bash pyldes
