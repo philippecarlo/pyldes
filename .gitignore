@@ -112,6 +112,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+pyldes.env
 
 # Spyder project settings
 .spyderproject
