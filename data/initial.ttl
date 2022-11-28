@@ -68,4 +68,5 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
   pyldes:alias "SampleView";
   dcat:servesDataset <https://pyldes.org/SampleEventStream>;
   pyldes:fragmentationKind pyldes:PageFragmentation;
-  pyldes:maxNodeSize "4"^^xsd:int .
+  pyldes:maxNodeSize "4"^^xsd:int;
+  pyldes:sequenceType xsd:int .
