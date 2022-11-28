@@ -68,7 +68,12 @@ and launched based on the given Make action.
 
 The below listed Make actions need to be executed from within the root of the project.
 This [Makefile](Makefile) has a dependency on the [pyldes.env](pyldes.env) configuration file and the 
-[Makefile](app/Makefile) from the [app](app) directory
+[Makefile](app/Makefile) from the [app](app) directory.
+Copy and adjust the pyldes.env.example file to your specific setup to pyldes.env and see the following for startup instructions.
+
+```shell
+cp pyldes.env.example pyldes.env
+```
 
 #### To check the supported Make actions
 ```shell
