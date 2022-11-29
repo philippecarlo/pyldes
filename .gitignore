@@ -112,6 +112,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+pyldes.env
 
 # Spyder project settings
 .spyderproject
@@ -130,3 +131,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# logging
+logs/
+
+# DB
+postgres-data

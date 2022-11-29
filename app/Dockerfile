@@ -24,7 +24,7 @@ USER pyldes
 WORKDIR /app
 
 # Setup the applicaton
-COPY --chown=pyldes:pyles . /app/
+COPY --chown=pyldes:pyldes . /app/
 RUN make build
 
 CMD ["make", "run"]

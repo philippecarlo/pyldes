@@ -1,11 +1,18 @@
 from typing import List
+from rdflib import URIRef
+
 from sqlalchemy import desc, Integer, DateTime
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import SQLAlchemyError
+
+from overrides import override
+
+from abstract import StorageProvider
 from models import Ldes, TreeCollection, TreeView, TreeMember
-from rdflib import URIRef
 from tools.ldes_server_exception import LdesPresistenceError, LdesNotFoundError, LdesServerError
-class PostgresStorageProvider:
+
+
+class PostgresStorageProvider(StorageProvider):
 
     def __init__(self, session_factory, db):
         self.session_factory = session_factory
@@ -13,32 +20,39 @@ class PostgresStorageProvider:
 
     # --- COLLECTIONS / LDES STREAMS --- #
     # to create and update TREE collections (in this case LDES streams)
+    @override
     def get_ldes_collections(self) -> List[TreeCollection]:
         with self.session_factory() as session:
-            all_ldes = session.query(TreeCollection).options(joinedload(TreeCollection.views)).all()
+            all_ldes = session.query(TreeCollection).options(
+                joinedload(TreeCollection.views)).all()
             return all_ldes
 
+    @override
     def get_ldes_collection(self, collection_ref: URIRef) -> TreeCollection:
         with self.session_factory() as session:
             try:
-                spec = session.query(TreeCollection).options(joinedload(TreeCollection.views)).filter(TreeCollection.id==collection_ref).one()
+                spec = session.query(TreeCollection).options(joinedload(
+                    TreeCollection.views)).filter(TreeCollection.id == collection_ref).one()
                 return spec
             except SQLAlchemyError as e:
                 raise LdesNotFoundError(e)
 
+    @override
     def get_ldes_collection_by_alias(self, collection_alias: str) -> TreeCollection:
         with self.session_factory() as session:
             try:
-                spec = session.query(TreeCollection).options(joinedload(TreeCollection.views)).filter(TreeCollection.alias==collection_alias).one()
+                spec = session.query(TreeCollection).options(joinedload(
+                    TreeCollection.views)).filter(TreeCollection.alias == collection_alias).one()
                 return spec
             except SQLAlchemyError as e:
-                raise LdesNotFoundError(e)            
+                raise LdesNotFoundError(e)
 
+    @override
     def create_ldes_collection(
-            self, 
-            collection_ref: URIRef, 
+            self,
+            collection_ref: URIRef,
             alias: str,
-            title: str, 
+            title: str,
             member_frame: str) -> TreeCollection:
         with self.session_factory() as session:
             try:
@@ -54,16 +68,17 @@ class PostgresStorageProvider:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
+    @override
     def create_or_update_ldes_collection(
-            self, 
-            collection_ref: URIRef, 
-            alias: str, 
-            title: str, 
+            self,
+            collection_ref: URIRef,
+            alias: str,
+            title: str,
             member_frame: str) -> TreeCollection:
         with self.session_factory() as session:
             try:
                 ldes = session.query(TreeCollection).get(collection_ref)
-                if not(ldes):
+                if not (ldes):
                     ldes = Ldes()
                     ldes.id = collection_ref
                     ldes.alias = alias
@@ -81,44 +96,51 @@ class PostgresStorageProvider:
             except SQLAlchemyError as e:
                 session.rollback()
                 raise LdesPresistenceError(e)
-            
+
     # --- TREE VIEWS --- #
-    # to create TREE views on a collection 
+    # to create TREE views on a collection
     # using some kind of fragmenation or navigation structure
-    
+
+    @override
     def get_ldes_views(self, collection_ref: URIRef) -> List[TreeView]:
         with self.session_factory() as session:
             if not collection_ref:
                 views = session.query(TreeView).all()
                 return views
             else:
-                views = session.query(TreeView).filter(TreeView.collection_ref == collection_ref).all()
+                views = session.query(TreeView).filter(
+                    TreeView.collection_ref == collection_ref).all()
                 return views
 
+    @override
     def get_ldes_view(self, view_ref: URIRef) -> TreeView:
         with self.session_factory() as session:
             try:
-                views = session.query(TreeView).filter(TreeView.id == view_ref).one()
+                views = session.query(TreeView).filter(
+                    TreeView.id == view_ref).one()
                 return views
             except SQLAlchemyError as e:
                 raise LdesNotFoundError(e)
 
+    @override
     def get_ldes_view_by_alias(self, view_alias: str) -> TreeView:
         with self.session_factory() as session:
             try:
-                spec = session.query(TreeView).filter(TreeView.alias==view_alias).one()
+                spec = session.query(TreeView).filter(
+                    TreeView.alias == view_alias).one()
                 return spec
             except SQLAlchemyError as e:
                 raise LdesNotFoundError(e)
 
-    def create_ldes_view(self, 
-            collection_ref: URIRef, 
-            view_description_ref: URIRef, 
-            view_alias: str, 
-            fragmentation_kind: URIRef, 
-            max_node_size: int,
-            path: URIRef,
-            sequence_type:str)-> TreeView:
+    @override
+    def create_ldes_view(self,
+                         collection_ref: URIRef,
+                         view_description_ref: URIRef,
+                         view_alias: str,
+                         fragmentation_kind: URIRef,
+                         max_node_size: int,
+                         path: URIRef,
+                         sequence_type: str) -> TreeView:
         with self.session_factory() as session:
             try:
                 view = TreeView()
@@ -137,19 +159,21 @@ class PostgresStorageProvider:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
-    def update_ldes_view(self, 
-            collection_ref: URIRef, 
-            view_description_ref: URIRef, 
-            view_alias: str, 
-            fragmentation_kind: URIRef, 
-            max_node_size: int,
-            path: URIRef,
-            sequence_type:str) -> TreeView:
+    @override
+    def update_ldes_view(self,
+                         collection_ref: URIRef,
+                         view_description_ref: URIRef,
+                         view_alias: str,
+                         fragmentation_kind: URIRef,
+                         max_node_size: int,
+                         path: URIRef,
+                         sequence_type: str) -> TreeView:
         with self.session_factory() as session:
             try:
                 view = session.query(TreeView).get(view_description_ref)
-                if not(view):
-                    raise LdesNotFoundError(f"Tree view {view_description_ref} does not exist.")
+                if not (view):
+                    raise LdesNotFoundError(
+                        f"Tree view {view_description_ref} does not exist.")
                 else:
                     view.collection_id = collection_ref
                     view.alias = view_alias
@@ -165,19 +189,20 @@ class PostgresStorageProvider:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
+    @override
     def create_or_update_ldes_view(
             self,
-            collection_ref: URIRef, 
-            view_description_ref: URIRef, 
-            view_alias: str, 
-            fragmentation_kind: URIRef, 
+            collection_ref: URIRef,
+            view_description_ref: URIRef,
+            view_alias: str,
+            fragmentation_kind: URIRef,
             max_node_size: int,
             path: URIRef,
-            sequence_type:str):
+            sequence_type: str):
         with self.session_factory() as session:
             try:
                 view = session.query(TreeView).get(view_description_ref)
-                if not(view):
+                if not (view):
                     view = TreeView()
                     view.id = view_description_ref
                     view.collection_id = collection_ref
@@ -204,11 +229,12 @@ class PostgresStorageProvider:
     # --- TREE MEMBERS --- #
     # append tree members to a collection
 
+    @override
     def add_ldes_member(
-            self, 
-            collection_ref: URIRef, 
-            member_ref: URIRef, 
-            member_json: dict, 
+            self,
+            collection_ref: URIRef,
+            member_ref: URIRef,
+            member_json: dict,
             member_rdf: str) -> TreeMember:
         with self.session_factory() as session:
             try:
@@ -225,11 +251,14 @@ class PostgresStorageProvider:
                 session.rollback()
                 raise LdesPresistenceError(e)
 
+    @override
     def get_ldes_member_count(self, collection_ref: URIRef) -> int:
         with self.session_factory() as session:
-            member_count = session.query(TreeMember).filter(TreeMember.collection_id == collection_ref).count()
+            member_count = session.query(TreeMember).filter(
+                TreeMember.collection_id == collection_ref).count()
             return member_count
-    
+
+    @override
     def get_ldes_members(self, collection_ref: URIRef, path_ref: URIRef, sequence_type: str, skip: int, take: int) -> List[TreeMember]:
         with self.session_factory() as session:
             if sequence_type == "xsd:int":
@@ -254,11 +283,14 @@ class PostgresStorageProvider:
                 msg = f"Unsupported pyldes:sequence_type '{sequence_type}'"
                 raise LdesServerError(msg)
 
+    @override
     def storage_ready(self):
         return self.db.db_exists()
-    
+
+    @override
     def initialize_storage(self):
         self.db.create_database()
-    
+
+    @override
     def teardown_storage(self):
         self.db.drop_database()
