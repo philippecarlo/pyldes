@@ -14,7 +14,7 @@ A Python LDES Server
 
 (todo)
 
-## Running en testing
+## Running and testing
 
 ### Local Setup
 The easiest way to configure your local setup is via the Make actions executed from within the [app](app) directory of 
@@ -33,7 +33,7 @@ make help
 make build
 ```
 #### To start a Pyldes locally
-This will only start the Pyldes service. It is expected that a local or dockerized Postgress service already is 
+This will only start the Pyldes service. It is expected that a local or dockerized Postgres service already is 
 deployed.
 ```shell
 make run
@@ -64,7 +64,7 @@ are correctly set.
 In the [docker-compose.yml](docker-compose.yml) one can see that following Dockers containers will be build
 and launched based on the given Make action.
 * Pyldes
-* Postgress
+* Postgres
 
 The below listed Make actions need to be executed from within the root of the project.
 This [Makefile](Makefile) has a dependency on the [pyldes.env](pyldes.env) configuration file and the 
