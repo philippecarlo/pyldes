@@ -22,7 +22,7 @@ def db():
     db.drop_database()
 
 def test_can_create_collection(db):
-    storage = PostgresStorageProvider(db.session)
+    storage = PostgresStorageProvider(db.session,db)
     storage.create_or_update_ldes_collection(tc1.test_collection_ref, tc1.test_alias, tc1.test_title, tc1.test_member_frame)
     # directly test storage holds the data (do not use get_collection)
     with db.session() as session:
