@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils.functions import database_exists
 from contextlib import contextmanager, AbstractContextManager
-from typing import Callable
 from models.tree_base import Base
 import logging
 
@@ -21,9 +20,6 @@ class PostgresDB:
                 bind=self._engine,
             ),
         )
-    
-    def create_database(self) -> None:
-        Base.metadata.create_all(self._engine)
     
     @contextmanager
     def session(self):

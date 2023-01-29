@@ -32,7 +32,7 @@ def render_ldes_server(data: Graph):
     
 def render_ldes_node(data: Graph):
     _json = data.serialize(format='json-ld')
-    _frame = { "@type" : "https://w3id.org/tree#Node"  }
+    _frame = { "@type" : "https://w3id.org/tree#Node",   }
     ldes_node = jsonld.frame(json.loads(_json), _frame)
     # same issue as with views above, need to ensure relations is a list
     if 'https://w3id.org/tree#relation' not in ldes_node.keys():
@@ -40,7 +40,11 @@ def render_ldes_node(data: Graph):
     if not isinstance(ldes_node['https://w3id.org/tree#relation'], list):
         relation = ldes_node['https://w3id.org/tree#relation']
         ldes_node['https://w3id.org/tree#relation'] = [ relation ]
-    #print(ldes_node)
+    members = ldes_node['https://w3id.org/tree#viewDescription']['http://www.w3.org/ns/dcat#servesDataset']['https://w3id.org/tree#member']
+    if members is None:
+        ldes_node['https://w3id.org/tree#viewDescription']['http://www.w3.org/ns/dcat#servesDataset']['https://w3id.org/tree#member'] = []
+    elif members is not None and not isinstance(members, list):
+        ldes_node['https://w3id.org/tree#viewDescription']['http://www.w3.org/ns/dcat#servesDataset']['https://w3id.org/tree#member'] = [ members ]
     return render_template('ldes_node.html', title='Linked Data Event Stream Server', model=ldes_node, json=json)
 
 def render_ldes_collection(data: Graph):

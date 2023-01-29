@@ -4,15 +4,11 @@ A Python LDES Server
 
 ## Introduction
 
-(todo)
+This Linked Data Event Stream server is developed with the purpose to create an LDES conformance 
+testing suite. It implements the [LDES specification](https://semiceu.github.io/LinkedDataEventStreams/) which is based itself on the [TREE Hypermedia Specification](https://treecg.github.io/specification/).
 
 ## Conformance
-
-(todo)
-
-## Requirements
-
-(todo)
+The conformance tests can be found under the [Conformance](app/Conformance) folder in this repository.
 
 ## Running en testing
 
@@ -104,8 +100,9 @@ To use the service, you need to seed the database using the following command:
 curl --request GET \
   --url http://localhost:5000/manage/init
 ```
+After executing the above request, the server should be accessible at the root location. By default, the server hosts an endpoint on localhost port 5000. Browsing to it with a browser will show the empty server page. Querying the root address with a HTTP client (e.g., insomnia or postman) will result in the basic server information being returned. 
 
-At this time, the service also requires that at least one collection is created in storage:
+### Creating a collection
 
 ```shell
 curl --request POST \
@@ -121,77 +118,47 @@ PREFIX sosa: <http://www.w3.org/ns/sosa/>
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 
-<https://pyldes.org/SampleEventStream> a ldes:EventStream;
-  pyldes:alias "SampleEventStream";
-  dcterms:title "A sample Event Stream with Bogus data";
-  pyldes:memberFrameSpec "{ \"@type\":\"http://www.w3.org/ns/sosa/Observation\", \"http://www.w3.org/ns/sosa/madeBySensor\": {}, \"http://www.w3.org/ns/sosa/hasSimpleResult\":{}}";
-  tree:member <SampleMember1>, <SampleMember2>, <SampleMember3>, <SampleMember4>, <SampleMember5>, <SampleMember6>, <SampleMember7>, <SampleMember8>, <SampleMember9>, <SampleMember10> .
+<https://data.imec.be/cityflows> a ldes:EventStream;
+	pyldes:alias "Cityflows";
+  dcterms:title "A sample event stream with some basic cityflows members.";
+	pyldes:memberFrameSpec "{ \"@type\":\"http://www.w3.org/ns/sosa/Observation\", \"http://www.w3.org/ns/sosa/resultTime\": {}, \"http://www.w3.org/ns/sosa/madeBySensor\": {}, \"http://www.w3.org/ns/sosa/observedProperty\": {}, \"http://www.w3.org/ns/sosa/hasSimpleResult\":{}}".
 
-<SampleMember1> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "121"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember2> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "122"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember3> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "123"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember4> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "124"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember5> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "125"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember6> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "126"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember7> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "127"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember8> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "128"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember9> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "129"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-<SampleMember10> a sosa:Observation;
-  sosa:madeBySensor <bogusSensor>;
-  sosa:hasSimpleResult "130"^^xsd:float;
-  tree:memberOf <https://pyldes.org/SampleEventStream> .
-
-
-<SamplePageSizeView>
+<CityflowsDefaultView>
   a tree:ViewDescription;
-  pyldes:alias "SampleView";
-  dcat:servesDataset <https://pyldes.org/SampleEventStream>;
-  pyldes:fragmentationKind pyldes:PageFragmentation;
-  pyldes:maxNodeSize "4"^^xsd:int.
-
-
-
+	pyldes:alias "CityflowsDefaultView";
+	dcat:servesDataset <https://data.imec.be/cityflows>;
+	tree:path sosa:resultTime;
+	pyldes:fragmentationKind pyldes:PageFragmentation;
+	pyldes:maxNodeSize "100"^^xsd:int;
+	pyldes:sequence_type "xsd:dateTime".
   '
 ```
+Some notes apply to this snippet. 
+1. The `pyldes:memberFrameSpec` property is used to map the graph representation of a member to a non-graph json snippet used by the Postgres storage component. This is not part of the specification and may be obsoleted later when SHACL-support is added.
+2. The `pyldes:fragmentationKind` is a built-in fragmentation of this server that is provided for convenience and is not part of the specification. The same applies to `pyldes:maxNodeSize`. 
+3. The `pyldes:sequence_type` is currently needed for the fragmentation to understand how it should order the data.  It may be osoleted when SHACL support is added.
 
-### using
+After creating the collection and the view, it shows in the root request and it is possible to follow the link to the view. The response will be empty.
 
-The server hosts an endpoint on localhost port 5000.
-You can point your browser to it or do a get request using any HTTP client.
-You can follow the LDES/TREE links from there ;-).
+### Adding memebers
+The following command can be used to add a member. It is possible to add multiple members in batch.
+Take note that using this method to add members (currently) requires to specify the meber type as an argument to the request.
+
+```shell
+curl --request POST \
+  --url http://localhost:5000/ldes/Cityflows?member_type=http://www.w3.org/ns/sosa/Observation \
+  --header 'Accept: text/turtle' \
+  --header 'Content-Type: text/turtle' \
+  --data 'BASE   <https://pyldes.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX tree: <https://w3id.org/tree#>
+PREFIX ldes: <https://w3id.org/ldes#>
+PREFIX pyldes: <https://pyldes.org/spec/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+
+<https://data.imec.be/cityflows/cropland/schoolstraat/123456789> a sosa:Observation ;
+    sosa:hasSimpleResult 3.55339e+03 ;
+		sosa:resultTime "2022-11-24T08:00:00+00:00"^^xsd:dateTime ;
+    sosa:madeBySensor <https://data.imec.be/cityflows/cropland/schoolstraat/unknown> .
+  '
+  ```
