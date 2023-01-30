@@ -92,7 +92,7 @@ make stop
 
 The PyLDES server was developed using PostgreSQL version 12 but any reasonably
 recent version should do. All that is needed is to spin it up, create a DB with
-proper privileges and configure the endpoint URL in the config.yml file.
+proper privileges and configure the endpoint URL: ```postgres_url``` in the [config.yml](/app/config.yml) file.
 
 To use the service, you need to seed the database using the following command:
 
